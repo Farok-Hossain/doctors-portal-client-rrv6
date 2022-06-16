@@ -1,11 +1,13 @@
 import React from 'react';
-import { Button, Container, Grid, TextField, Typography } from '@mui/material';   
+import { Alert, Button, CircularProgress, Container, Grid, TextField, Typography } from '@mui/material';   
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import login from '../../../images/login.png';
+import useAuth from '../../../hooks/useAuth';
 
 const Register = () => {
     const [loginData, setLoginData] = useState({});
+    const {user, registerUser, isLoading, authError} = useAuth();
 
     const handleOnChange = e => {
         const field = e.target.name;
@@ -15,7 +17,11 @@ const Register = () => {
         setLoginData(newLoginData);
     }
     const handleLoginSubmit = e => {
-        alert('login form submitted');
+        if(loginData.password !== loginData.password2){
+            alert("Your password did not match");
+            return
+        }
+        registerUser(loginData.email, loginData.password);
         e.preventDefault();
     }
     return (
@@ -23,12 +29,13 @@ const Register = () => {
             <Grid container spacing={2}>
               <Grid sx={{mt: 8}} item xs={12} md={6}>
                 <Typography variant="body1" gutterBottom>Register</Typography>
-                <form onSubmit={handleLoginSubmit}>
+                { !isLoading && <form onSubmit={handleLoginSubmit}>
                 <TextField
                 sx={{width: '75%', m: 1}} 
                 id="standard-basic" 
                 label="Your Email" 
                 name="email"
+                type="email"
                 onChange={handleOnChange}
                 variant="standard" />
                 <br />
@@ -50,14 +57,17 @@ const Register = () => {
                 onChange={handleOnChange}
                 variant="standard"/> 
                 
-                <Button type="submit" variant="contained" sx={{width: '75%', m: 1}}>Login</Button> 
+                <Button type="submit" variant="contained" sx={{width: '75%', m: 1}}>Register</Button> 
                 
                 <NavLink 
                 to="/login"
                 style={{textDecoration: 'none'}}>
                   <Button variant="text">Already Register? Please Login</Button>
                 </NavLink>
-                </form>
+                </form>}
+                {isLoading && <CircularProgress></CircularProgress>}
+                {user?.email && <Alert severity="success">User Created successfully!</Alert>}
+                {authError && <Alert severity="error">{authError}</Alert>}
               </Grid>
               <Grid item xs={12} md={6}>
                 <img style={{width: '100%'}} src={login} alt="" />
