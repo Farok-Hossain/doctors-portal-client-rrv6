@@ -1,12 +1,13 @@
 import React from 'react';
 import { Alert, Button, CircularProgress, Container, Grid, TextField, Typography } from '@mui/material';   
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import login from '../../../images/login.png';
 import useAuth from '../../../hooks/useAuth';
 
 const Register = () => {
     const [loginData, setLoginData] = useState({});
+    const history = useHistory();
     const {user, registerUser, isLoading, authError} = useAuth();
 
     const handleOnChange = e => {
@@ -21,7 +22,7 @@ const Register = () => {
             alert("Your password did not match");
             return
         }
-        registerUser(loginData.email, loginData.password);
+        registerUser(loginData.email, loginData.password, loginData.name, history);
         e.preventDefault();
     }
     return (
@@ -30,6 +31,13 @@ const Register = () => {
               <Grid sx={{mt: 8}} item xs={12} md={6}>
                 <Typography variant="body1" gutterBottom>Register</Typography>
                 { !isLoading && <form onSubmit={handleLoginSubmit}>
+                <TextField
+                sx={{width: '75%', m: 1}} 
+                id="standard-basic" 
+                label="Your Name" 
+                name="name"
+                onChange={handleOnChange}
+                variant="standard" />
                 <TextField
                 sx={{width: '75%', m: 1}} 
                 id="standard-basic" 
